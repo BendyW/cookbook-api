@@ -25,9 +25,18 @@ soup = BeautifulSoup(r.content.decode(), 'html.parser')
 soup = soup.get_text().strip()
 
 responses = send(prompt="Return the recipe from this text:", text_data=soup, chat_model="gpt-3.5-turbo", model_token_limit=modelTokenLimit, max_tokens=sendTokenLimit)
+allResponses = ""
 for response in responses:
-    print(response.content)
-print("hello")
+    allResponses = allResponses + response.content
+
+print(allResponses)
+print("--------------------")
+print("Removing unnecessary text")
+print("--------------------")
+cleanResponses = send(prompt="Return most correct instructions:", text_data=allResponses, chat_model="gpt-3.5-turbo", model_token_limit=modelTokenLimit, max_tokens=sendTokenLimit)
+for cleanResponses in cleanResponses:
+    print(cleanResponses.content)
+print("End of test")
 
 # class Recipe(BaseModel):
 #     recipe_url: str
