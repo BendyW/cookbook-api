@@ -5,3 +5,6 @@ then install libraries using `pip install {library}`
 `pip freeze > requirements.txt` to generate requirements file
 `pip install -r requirements.txt` install requirements
 leave environment using `deactivate`
+
+
+run fastapu `uvicorn main:app --reload`
