@@ -17,49 +17,31 @@ client = OpenAI(
 
 modelTokenLimit = 4096
 sendTokenLimit = 2000
-testingURL = "https://joyfoodsunshine.com/the-most-amazing-chocolate-chip-cookies/"
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
 
-r = requests.get(testingURL, headers=headers)
-soup = BeautifulSoup(r.content.decode(), 'html.parser')
-soup = soup.get_text().strip()
-# "Return the recipe from this text only where a recipe is explicitly stated:"
-findIngredientsAndInstructionsResponses = send(prompt="Check if this is an exact list of ingredients with measurements. Return the ingredients and measurements if it is a match. Check if this is exact instructions to a recipe. Return the instructions if it is a match. Do not return text if no matches", text_data=soup, chat_model="gpt-3.5-turbo", model_token_limit=modelTokenLimit, max_tokens=sendTokenLimit)
-allResponses = ""
-for response in findIngredientsAndInstructionsResponses:
-    allResponses = allResponses + response.content
-print(allResponses)
-print("End of test")
 
-# class Recipe(BaseModel):
-#     recipe_url: str
 
-# @app.get("/")
-# async def root():
-#     return {"message": "Hello World"}
+class Recipe(BaseModel):
+    url: str
 
-# @app.get("/items/{item_id}")
-# async def read_item(item_id: int):
-#     return {"item_id": item_id}
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
 
-# @app.post("/find-recipe")
-# async def find_recipe(recipe: Recipe):
-#     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-#     try:
-#         r = requests.get(recipe.recipe_url, headers=headers)
-#     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError):
-#         return {"error": "Error"}
-#     soup = BeautifulSoup(r.content.decode(), 'html.parser')
-#     soup = soup.get_text().strip()
-#     print(len(soup))
-#     try:
-#         completion = client.chat.completions.create(
-#             model="gpt-3.5-turbo",
-#             messages=[
-#                 {"role": "system", "content": f"Return the recipe from this text: {soup}."}
-#             ]
-#         )
-#     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError):
-#         return {"error": "Error"}
-#     print(completion)
-#     return completion
+@app.get("/items/{item_id}")
+async def read_item(item_id: int):
+    return {"item_id": item_id}
+
+@app.post("/find-recipe")
+def find_recipe(recipe: Recipe):
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+    r = requests.get(recipe.url, headers=headers)
+    soup = BeautifulSoup(r.content.decode(), 'html.parser')
+    soup = soup.get_text().strip()
+    print(soup)
+    findIngredientsAndInstructionsResponses = send(prompt="Check if this text contains an exact list of ingredients with measurements. Return ingredients if it is a match. Check if this text contains exact instructions to a recipe. Return instructions if so. Do not return text if no matches", text_data=soup, chat_model="gpt-3.5-turbo", model_token_limit=modelTokenLimit, max_tokens=sendTokenLimit)
+    allResponses = ""
+    for response in findIngredientsAndInstructionsResponses:
+        allResponses = allResponses + response.content
+    print(allResponses)
+    return {"recipe": allResponses}
