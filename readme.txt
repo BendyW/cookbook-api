@@ -7,4 +7,15 @@ then install libraries using `pip install {library}`
 leave environment using `deactivate`
 
 
-run fastapu `uvicorn main:app --reload`
+run fastapi `uvicorn main:app --reload`
+
+//Notes for self about psql
+psql to start 
+//setting up users
+//connect with as user with all permissions
+\c cookbook
+"GRANT ALL ON SCHEMA public TO tester;"
+//reconnect with "\c cookbook tester"
+
+
+Database Schema: https://drawsql.app/teams/ben-waldman/diagrams/cookbook-schema

@@ -5,9 +5,10 @@ from openai import OpenAI
 from dotenv import dotenv_values
 from bs4 import BeautifulSoup
 from chatgptmax import send
+# from psql_app.connect import connect
+
 
 app = FastAPI()
-print("begin test")
 
 config = dotenv_values()
 
